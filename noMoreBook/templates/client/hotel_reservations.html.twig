@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Réservations disponibles{% endblock %}
+
+{% block body %}
+    <h1>Réservations disponibles pour {{ hotel.name }}</h1>
+    <ul>
+        {% for reservation in reservations %}
+            <li>
+                Du {{ reservation.startDate|date('d/m/Y') }} au {{ reservation.endDate|date('d/m/Y') }},
+                Prix : {{ reservation.price }} €
+                <a href="{{ path('client_reserver_reservation', {id: reservation.id}) }}" class="btn btn-primary">Réserver</a>
+                <form method="post" action="{{ path('client_message_partner', {partnerId: reservation.partner.id}) }}" style="display:inline;">
+                    <input type="text" name="content" placeholder="Votre message" required>
+                    <button type="submit" class="btn btn-secondary btn-sm">Contacter le partenaire</button>
+                </form>
+            </li>
+        {% else %}
+            <li>Aucune réservation disponible pour cet hôtel.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

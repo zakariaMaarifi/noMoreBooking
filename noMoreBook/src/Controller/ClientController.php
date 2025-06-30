@@ -29,8 +29,10 @@ namespace App\Controller;
 
 use App\Repository\HotelRepository;
 use App\Repository\ReservationRepository;
+use App\Repository\PartnerRepository;
 use App\Entity\Hotel;
 use App\Entity\Reservation;
+use App\Entity\Message;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,10 +59,22 @@ final class ClientController extends AbstractController
     #[Route('/client/offres', name: 'client_offers')]
     public function offres(HotelRepository $hotelRepository): Response
     {
-        $offres = $hotelRepository->findAvailableOffers();
-        return $this->render('client/offres.html.twig', [
-            'offres' => $offres,
-        ]);
+         // Récupère tous les hôtels
+    $hotels = $hotelRepository->findAll();
+
+    // Filtre côté contrôleur pour ne garder que ceux avec au moins une réservation disponible
+    $hotelsWithAvailable = array_filter($hotels, function($hotel) {
+        foreach ($hotel->getReservations() as $reservation) {
+            if ($reservation->isAvailable()) {
+                return true;
+            }
+        }
+        return false;
+    });
+
+    return $this->render('client/offres.html.twig', [
+        'hotels' => $hotelsWithAvailable,
+    ]);
     }
     #[Route('/client/offre/{id}', name: 'client_offer_detail')]
 public function offerDetail(Hotel $hotel): Response
@@ -80,6 +94,22 @@ public function offerDetail(Hotel $hotel): Response
             'reservations' => $reservations,
         ]);
     }
+
+    #[Route('/client/hotel/{id}/reservations', name: 'client_hotel_reservations')]
+public function hotelReservations(Hotel $hotel): Response
+{
+    $availableReservations = [];
+    foreach ($hotel->getReservations() as $reservation) {
+        if ($reservation->isAvailable()) {
+            $availableReservations[] = $reservation;
+        }
+    }
+
+    return $this->render('client/hotel_reservations.html.twig', [
+        'hotel' => $hotel,
+        'reservations' => $availableReservations,
+    ]);
+}
 
     #[Route('/client/reserver/{id}', name: 'client_reserver_hotel')]
     public function reserverHotel(
@@ -108,5 +138,74 @@ public function offerDetail(Hotel $hotel): Response
         'hotel' => $hotel,
     ]);
     }
+
+#[Route('/client/reserver-reservation/{id}', name: 'client_reserver_reservation')]
+public function reserverReservation(
+    Reservation $reservation,
+    EntityManagerInterface $entityManager
+): Response {
+    $client = $this->getUser();
+
+    if (!$reservation->isAvailable()) {
+        $this->addFlash('error', 'Cette réservation n\'est plus disponible.');
+        return $this->redirectToRoute('client_hotel_reservations', ['id' => $reservation->getHotel()->getId()]);
+    }
+
+    $reservation->setClient($client);
+    $reservation->setIsAvailable(false);
+    $entityManager->flush();
+
+    $this->addFlash('success', 'Réservation effectuée avec succès !');
+    return $this->redirectToRoute('client_reservations');
+}
+#[Route('/client/annuler-reservation/{id}', name: 'client_annuler_reservation', methods: ['POST'])]
+public function annulerReservation(
+    Reservation $reservation,
+    EntityManagerInterface $entityManager,
+    Request $request
+): Response {
+    $client = $this->getUser();
+
+    // Vérifie que la réservation appartient bien au client
+    if ($reservation->getClient() !== $client) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // Vérifie le token CSRF
+    if ($this->isCsrfTokenValid('annuler' . $reservation->getId(), $request->request->get('_token'))) {
+        $reservation->setClient(null);
+        $reservation->setIsAvailable(true);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Réservation annulée avec succès.');
+    }
+
+    return $this->redirectToRoute('client_reservations');
+}
+#[Route('/client/message-partner/{partnerId}', name: 'client_message_partner', methods: ['POST'])]
+public function messagePartner(
+    int $partnerId,
+    Request $request,
+    EntityManagerInterface $entityManager,
+    PartnerRepository $partnerRepository
+): Response {
+    $client = $this->getUser();
+    $partner = $partnerRepository->find($partnerId);
+
+    $content = $request->request->get('content');
+    if ($partner && $content) {
+        $message = new Message();
+        $message->setSender($client);
+        $message->setReceiver($partner);
+        $message->setContent($content);
+        $message->setSentAt(new \DateTime());
+        $entityManager->persist($message);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Message envoyé au partenaire.');
+    }
+
+    return $this->redirect($request->headers->get('referer'));
+}
 }
 

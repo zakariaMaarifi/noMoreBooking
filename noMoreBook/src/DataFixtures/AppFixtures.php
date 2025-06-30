@@ -68,6 +68,7 @@ class AppFixtures extends Fixture
         $reservation->setHotel($hotel);
         $reservation->addCategory($category);
         $reservation->setClient($client);
+        $reservation->setPartner($partner);
         $manager->persist($reservation);
 
         // Création d'un achat

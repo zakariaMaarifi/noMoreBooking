@@ -4,11 +4,9 @@
 
 {% block body %}
     <h1>Mes réservations</h1>
-
     {% for message in app.flashes('success') %}
         <div class="alert alert-success">{{ message }}</div>
     {% endfor %}
-
     {% if reservations is empty %}
         <p>Aucune réservation pour le moment.</p>
     {% else %}
@@ -16,20 +14,25 @@
             <thead>
                 <tr>
                     <th>Hôtel</th>
-                    <th>Ville</th>
                     <th>Date début</th>
                     <th>Date fin</th>
                     <th>Prix</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for reservation in reservations %}
                     <tr>
                         <td>{{ reservation.hotel.name }}</td>
-                        <td>{{ reservation.hotel.city }}</td>
                         <td>{{ reservation.startDate|date('d/m/Y') }}</td>
                         <td>{{ reservation.endDate|date('d/m/Y') }}</td>
                         <td>{{ reservation.price }} €</td>
+                        <td>
+                            <form method="post" action="{{ path('client_annuler_reservation', {id: reservation.id}) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('annuler' ~ reservation.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Annuler cette réservation ?');">Annuler</button>
+                            </form>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

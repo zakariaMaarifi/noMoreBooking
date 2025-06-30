@@ -37,7 +37,7 @@ class Reservation
     private Collection $categories;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Client $client = null;
 
     #[ORM\ManyToOne]

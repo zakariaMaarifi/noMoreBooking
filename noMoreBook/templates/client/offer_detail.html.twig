@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail de l'hôtel{% endblock %}
+
+{% block body %}
+    <h1>{{ hotel.name }}</h1>
+    <p>Ville : {{ hotel.city }}</p>
+    <p>Status : {{ hotel.status }}</p>
+    <p>Partenaire : {{ hotel.partner.companyName }}</p>
+    {# Ajoute d'autres infos si besoin #}
+
+    <a href="{{ path('client_reserver_hotel', {id: hotel.id}) }}">Réserver cet hôtel</a>
+{% endblock %}

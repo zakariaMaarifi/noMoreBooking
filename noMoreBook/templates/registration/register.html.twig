@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ message }}</div>
+{% endfor %}
+    <h1>Register</h1>
+
+    {{ form_errors(registrationForm) }}
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.type) }}
+
+        <div id="client-fields">
+            {{ form_row(registrationForm.firstName) }}
+            {{ form_row(registrationForm.lastName) }}
+        </div>
+
+        <div id="partner-fields">
+            {{ form_row(registrationForm.companyName) }}
+        </div>
+
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.plainPassword, { label: 'Password' }) }}
+        {{ form_row(registrationForm.agreeTerms) }}
+
+        <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
+
+    <script>
+        function toggleFields() {
+            const type = document.getElementById('registration_form_type').value;
+            document.getElementById('client-fields').style.display = (type === 'client') ? 'block' : 'none';
+            document.getElementById('partner-fields').style.display = (type === 'partner') ? 'block' : 'none';
+        }
+        document.getElementById('registration_form_type').addEventListener('change', toggleFields);
+        window.addEventListener('DOMContentLoaded', toggleFields);
+    </script>
+{% endblock %}

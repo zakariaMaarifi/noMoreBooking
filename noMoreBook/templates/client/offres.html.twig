@@ -1,0 +1,16 @@
+<h1>Hôtels disponibles</h1>
+<ul>
+    {% for hotel in offres %}
+        <li>
+            <strong>{{ hotel.name }}</strong> à {{ hotel.city }}
+            {# Ajoute ici un lien ou bouton pour réserver #}
+            {# <a href="{{ path('client_reserver_hotel', {id: hotel.id}) }}">Réserver</a> #}
+                <li>
+        <strong>{{ hotel.name }}</strong> à {{ hotel.city }}
+        <a href="{{ path('client_offer_detail', {id: hotel.id}) }}">Voir l'offre</a>
+    </li>
+        </li>
+    {% else %}
+        <li>Aucun hôtel disponible pour le moment.</li>
+    {% endfor %}
+</ul>

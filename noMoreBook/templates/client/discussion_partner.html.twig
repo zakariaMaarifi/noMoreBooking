@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Discussion avec {{ partner.companyName }}{% endblock %}
+
+{% block body %}
+    <h1>Discussion avec {{ partner.companyName }}</h1>
+    <p>Email : {{ partner.email }}</p>
+    {# Ajoute d'autres infos du partenaire si besoin #}
+
+    <div class="messages">
+        {% for message in messages %}
+            <div style="margin-bottom: 10px;">
+                <strong>
+                    {% if message.sender == app.user %}
+                        Moi
+                    {% else %}
+                        {{ partner.companyName }}
+                    {% endif %}
+                </strong> :
+                {{ message.content }}
+                <span style="font-size: 0.8em; color: #888;">({{ message.sentAt|date('d/m/Y H:i') }})</span>
+            </div>
+        {% else %}
+            <p>Aucun message pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post" action="{{ path('client_message_partner', {partnerId: partner.id}) }}">
+        <input type="text" name="content" placeholder="Votre message" required>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+{% endblock %}

@@ -30,6 +30,7 @@ namespace App\Controller;
 use App\Repository\HotelRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\PartnerRepository;
+use App\Repository\MessageRepository;
 use App\Entity\Hotel;
 use App\Entity\Reservation;
 use App\Entity\Message;
@@ -206,6 +207,29 @@ public function messagePartner(
     }
 
     return $this->redirect($request->headers->get('referer'));
+}
+#[Route('/client/discussion-partner/{partnerId}', name: 'client_discussion_partner')]
+public function discussionPartner(
+    int $partnerId,
+    PartnerRepository $partnerRepository,
+    MessageRepository $messageRepository
+): Response {
+    $client = $this->getUser();
+    $partner = $partnerRepository->find($partnerId);
+
+    // Récupère tous les messages entre ce client et ce partenaire
+    $messages = $messageRepository->createQueryBuilder('m')
+        ->where('(m.sender = :client AND m.receiver = :partner) OR (m.sender = :partner AND m.receiver = :client)')
+        ->setParameter('client', $client)
+        ->setParameter('partner', $partner)
+        ->orderBy('m.sentAt', 'ASC')
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('client/discussion_partner.html.twig', [
+        'partner' => $partner,
+        'messages' => $messages,
+    ]);
 }
 }
 

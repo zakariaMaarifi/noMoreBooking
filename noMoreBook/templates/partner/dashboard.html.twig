@@ -1,5 +1,77 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Tableau de bord partenaire{% endblock %}
+
 {% block body %}
-<h1 class="text-2xl font-bold">Espace Partenaire</h1>
+<a href="{{ path('partner_all_discussions') }}" class="btn btn-info mb-3">Voir toutes mes discussions</a>
+    <h1>Mes réservations disponibles</h1>
+    <a href="{{ path('partner_reservation_new') }}" class="btn btn-success">Ajouter une réservation</a>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Hôtel</th>
+                <th>Ville</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Prix</th>
+                <th>Disponible</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reservation in disponibles %}
+            <tr>
+                <td>{{ reservation.hotel.name }}</td>
+                <td>{{ reservation.hotel.city }}</td>
+                <td>{{ reservation.startDate|date('d/m/Y') }}</td>
+                <td>{{ reservation.endDate|date('d/m/Y') }}</td>
+                <td>{{ reservation.price }} €</td>
+                <td>{{ reservation.isAvailable ? 'Oui' : 'Non' }}</td>
+                <td>
+                    <a href="{{ path('partner_reservation_edit', {id: reservation.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+                    <form method="post" action="{{ path('partner_reservation_delete', {id: reservation.id}) }}" style="display:inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette réservation ?');">Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="7">Aucune réservation disponible.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h1 class="mt-5">Réservations prises par des clients</h1>
+    <table class="table mt-3">
+        <thead>
+            <tr>
+                <th>Hôtel</th>
+                <th>Ville</th>
+                <th>Date début</th>
+                <th>Date fin</th>
+                <th>Prix</th>
+                <th>Client</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reservation in reservees %}
+            <tr>
+                <td>{{ reservation.hotel.name }}</td>
+                <td>{{ reservation.hotel.city }}</td>
+                <td>{{ reservation.startDate|date('d/m/Y') }}</td>
+                <td>{{ reservation.endDate|date('d/m/Y') }}</td>
+                <td>{{ reservation.price }} €</td>
+                <td>{{ reservation.client.email }}</td>
+                <td>
+                <a href="{{ path('partner_contact_client', {clientId: reservation.client.id}) }}" class="btn btn-primary btn-sm">Contacter</a>
+                <a href="{{ path('partner_view_client', {clientId: reservation.client.id}) }}" class="btn btn-info btn-sm">Voir infos</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6">Aucune réservation prise par un client.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 {% endblock %}

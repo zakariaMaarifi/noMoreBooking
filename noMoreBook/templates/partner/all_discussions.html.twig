@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes discussions{% endblock %}
+
+{% block body %}
+    <h1>Mes discussions avec les clients</h1>
+    <ul>
+        {% for client in clients %}
+            <li>
+                {{ client.email }}
+                <a href="{{ path('partner_contact_client', {clientId: client.id}) }}" class="btn btn-primary btn-sm">Voir la discussion</a>
+            </li>
+        {% else %}
+            <li>Aucune discussion pour le moment.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ path('partner_dashboard') }}" class="btn btn-secondary">Retour au tableau de bord</a>
+{% endblock %}

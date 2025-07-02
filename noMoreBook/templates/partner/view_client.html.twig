@@ -1,14 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Informations du client{% endblock %}
+{% block title %}Informations du client
+{% endblock %}
 
 {% block body %}
-    <h1>Informations du client</h1>
-    <ul>
-        <li>Email : {{ client.email }}</li>
-        <li>Nom : {{ client.lastName }}</li>
-        <li>Prénom : {{ client.firstName }}</li>
-        {# Ajoute d'autres infos si besoin #}
-    </ul>
-    <a href="{{ path('partner_dashboard') }}" class="btn btn-secondary">Retour</a>
+	<div class="max-w-xl mx-auto px-4 py-6">
+		<h1 class="text-3xl font-bold text-indigo-700 mb-6">Informations du client</h1>
+
+		<ul class="bg-white shadow rounded-lg p-6 space-y-4 text-gray-700">
+			<li>
+				<strong>Email :</strong>
+				{{ client.email }}</li>
+			<li>
+				<strong>Nom :</strong>
+				{{ client.lastName }}</li>
+			<li>
+				<strong>Prénom :</strong>
+				{{ client.firstName }}</li>
+			{# Ajoute d'autres infos si besoin #}
+		</ul>
+
+		<div class="mt-6">
+			<a href="{{ path('partner_dashboard') }}" class="inline-block px-6 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+				Retour
+			</a>
+		</div>
+	</div>
 {% endblock %}

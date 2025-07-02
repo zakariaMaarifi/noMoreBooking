@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Informations du client{% endblock %}
+
+{% block body %}
+    <h1>Informations du client</h1>
+    <ul>
+        <li>Email : {{ client.email }}</li>
+        <li>Nom : {{ client.lastName }}</li>
+        <li>Prénom : {{ client.firstName }}</li>
+        {# Ajoute d'autres infos si besoin #}
+    </ul>
+    <a href="{{ path('partner_dashboard') }}" class="btn btn-secondary">Retour</a>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contacter le client{% endblock %}
+
+{% block body %}
+    <h1>Discussion avec {{ client.email }}</h1>
+
+    <div class="mb-3">
+        {% for message in messages %}
+            <div style="margin-bottom: 10px;">
+                <strong>
+                    {% if message.sender == app.user %}
+                        Moi
+                    {% else %}
+                        {{ client.email }}
+                    {% endif %}
+                </strong> :
+                {{ message.content }}
+                <span style="font-size: 0.8em; color: #888;">({{ message.sentAt|date('d/m/Y H:i') }})</span>
+            </div>
+        {% else %}
+            <p>Aucun message pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post">
+        <textarea name="message" class="form-control" placeholder="Votre message" required></textarea>
+        <button type="submit" class="btn btn-primary mt-2">Envoyer</button>
+    </form>
+{% endblock %}

@@ -1,20 +1,72 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomePageController!{% endblock %}
+{% block title %}LastChanceRooms - Réservations d'hôtels annulées à prix réduit
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+	<div class="bg-gradient-to-b from-indigo-600 to-indigo-400 py-16">
+		<div class="max-w-7xl mx-auto px-4 text-center text-white">
+			<h1 class="text-4xl md:text-5xl font-extrabold">Réservez des hôtels annulés à prix cassé</h1>
+			<p class="mt-4 text-lg md:text-xl">Trouvez des offres de dernière minute grâce aux annulations d'autres voyageurs.</p>
+			<div class="mt-8 flex justify-center space-x-4">
+				<a href="{{ path('client_offers') }}" class="bg-white text-indigo-600 font-semibold py-3 px-6 rounded-xl shadow hover:bg-gray-100">
+					Voir les offres
+				</a>
+				{# <a href="{{ path('app_partner_register') }}" class="bg-indigo-800 text-white font-semibold py-3 px-6 rounded-xl shadow hover:bg-indigo-900">
+					Vendre une réservation
+				</a> #}
+			</div>
+		</div>
+	</div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+	<section class="py-12 bg-white">
+		<div class="max-w-6xl mx-auto px-4 text-center">
+			<h2 class="text-2xl font-bold mb-8">Comment ça marche ?</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+				<div class="bg-gray-50 p-6 rounded-xl shadow">
+					<h3 class="text-lg font-semibold mb-2">1. Publiez une réservation</h3>
+					<p>Vous ne pouvez pas partir ? Publiez votre réservation d’hôtel en quelques clics.</p>
+				</div>
+				<div class="bg-gray-50 p-6 rounded-xl shadow">
+					<h3 class="text-lg font-semibold mb-2">2. Achetez à petit prix</h3>
+					<p>Les clients consultent les offres annulées et réservent à prix réduit.</p>
+				</div>
+				<div class="bg-gray-50 p-6 rounded-xl shadow">
+					<h3 class="text-lg font-semibold mb-2">3. Gagnez ou économisez</h3>
+					<p>Les vendeurs récupèrent une partie de leurs frais. Les acheteurs font des économies.</p>
+				</div>
+			</div>
+		</div>
+	</section>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/HP/OneDrive/Bureau/M1 esgi/Projet Final Symfony/noMoreBooking/noMoreBook/src/Controller/HomePageController.php</code></li>
-        <li>Your template at <code>C:/Users/HP/OneDrive/Bureau/M1 esgi/Projet Final Symfony/noMoreBooking/noMoreBook/templates/home_page/index.html.twig</code></li>
-    </ul>
-</div>
+	<section class="py-12 bg-gray-100">
+		<div class="max-w-6xl mx-auto px-4">
+			<h2 class="text-2xl font-bold text-center mb-10">Offres récentes</h2>
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+				{# {% for reservation in reservations %}
+					<div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+						<h3 class="text-lg font-semibold mb-1">{{ reservation.hotelName }}</h3>
+						<p class="text-sm text-gray-500">{{ reservation.city }}</p>
+						<p class="mt-2 text-indigo-600 font-bold text-xl">{{ reservation.price|number_format(2, '.', ' ') }}
+							€</p>
+						<p class="text-xs text-gray-400">Pour le
+							{{ reservation.date|date('d/m/Y') }}</p>
+						<a href="{{ path('app_reservation_show', {id: reservation.id}) }}" class="mt-4 inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm">
+							Réserver
+						</a>
+					</div>
+				{% else %}
+					<p class="col-span-3 text-center text-gray-600">Aucune offre disponible actuellement.</p>
+				{% endfor %} #}
+			</div>
+		</div>
+	</section>
+
+	<section class="py-12 bg-white">
+		<div class="max-w-5xl mx-auto px-4 text-center">
+			<h2 class="text-2xl font-bold mb-4">Pourquoi LastChanceRooms ?</h2>
+			<p class="text-gray-600">Nous donnons une seconde vie aux réservations inutilisées. Évitez le gaspillage, profitez de bons plans, et aidez d'autres voyageurs à ne pas tout perdre.</p>
+		</div>
+	</section>
+
 {% endblock %}

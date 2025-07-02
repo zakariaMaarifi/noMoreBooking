@@ -1,25 +1,46 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Réservations disponibles{% endblock %}
+{% block title %}Réservations disponibles
+{% endblock %}
 
 {% block body %}
-    <h1>Réservations disponibles pour {{ hotel.name }}</h1>
-    <ul>
-        {% for reservation in reservations %}
-            <li>
-                Du {{ reservation.startDate|date('d/m/Y') }} au {{ reservation.endDate|date('d/m/Y') }},
-                Prix : {{ reservation.price }} €
-                <a href="{{ path('client_reserver_reservation', {id: reservation.id}) }}" class="btn btn-primary">Réserver</a>
-                {# <form method="post" action="{{ path('client_message_partner', {partnerId: reservation.partner.id}) }}" style="display:inline;">
-                    <input type="text" name="content" placeholder="Votre message" required>
-                    <button type="submit" class="btn btn-secondary btn-sm">Contacter le partenaire</button>
-                </form> #}
-                <a href="{{ path('client_discussion_partner', {partnerId: reservation.partner.id}) }}" class="btn btn-secondary btn-sm">
-                    Contacter le partenaire
-                </a>
-            </li>
-        {% else %}
-            <li>Aucune réservation disponible pour cet hôtel.</li>
-        {% endfor %}
-    </ul>
+	<div class="max-w-6xl mx-auto px-4 py-10">
+		<h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">
+			Réservations disponibles pour
+			{{ hotel.name }}
+		</h1>
+
+		{% if reservations is not empty %}
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				{% for reservation in reservations %}
+					<div class="bg-white shadow rounded-xl p-6 hover:shadow-md transition">
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">
+							Du
+							{{ reservation.startDate|date('d/m/Y') }}
+							au
+							{{ reservation.endDate|date('d/m/Y') }}
+						</h2>
+						<p class="text-gray-600 mb-4">💰
+							<strong>{{ reservation.price }}
+								€</strong>
+						</p>
+
+						<div class="flex flex-col sm:flex-row gap-3">
+							<a href="{{ path('client_reserver_reservation', {id: reservation.id}) }}" class="inline-block bg-indigo-600 text-white text-sm px-4 py-2 rounded hover:bg-indigo-700 text-center">
+								Réserver
+							</a>
+
+							<a href="{{ path('client_discussion_partner', {partnerId: reservation.partner.id}) }}" class="inline-block bg-gray-200 text-gray-800 text-sm px-4 py-2 rounded hover:bg-gray-300 text-center">
+								Contacter le partenaire
+							</a>
+						</div>
+					</div>
+				{% endfor %}
+			</div>
+		{% else %}
+			<div class="text-center text-gray-500 text-lg py-10">
+				Aucune réservation disponible pour cet hôtel.
+			</div>
+		{% endif %}
+	</div>
 {% endblock %}

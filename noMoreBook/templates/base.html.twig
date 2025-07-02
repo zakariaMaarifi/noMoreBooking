@@ -31,20 +31,26 @@
 
 				<!-- Links -->
 				<div class="flex items-center space-x-6">
-					<a href="{{ path('client_offers') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Offres</a>
-
 					{% if app.user %}
-						<a href="{{ path('client_reservations') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Mes réservations</a>
+						{% if 'ROLE_CLIENT' in app.user.roles %}
+							<a href="{{ path('client_offers') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Offres</a>
+							<a href="{{ path('client_reservations') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Mes réservations</a>
+						{% elseif 'ROLE_PARTNER' in app.user.roles %}
+							<a href="{{ path('partner_dashboard') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Tableau de bord</a>
+							<a href="{{ path('partner_all_discussions') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Voir toutes mes discussions</a>
+						{% endif %}
+
 						<span class="text-sm text-gray-500">Bonjour,
 							{{ app.user.email }}</span>
 
-						<form action="{{ path('app_logout') }}" method="post">
+						<form action="{{ path('app_logout') }}" method="post" class="inline">
 							<input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
 							<button type="submit" class="text-sm text-red-600 hover:text-red-800 font-medium">Déconnexion</button>
 						</form>
 					{% else %}
 						{% if app.request.attributes.get('_route') != 'app_login' %}
 							<a href="{{ path('app_login') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Se connecter</a>
+							<a href="{{ path('app_register') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">S'inscrire</a>
 						{% endif %}
 					{% endif %}
 				</div>

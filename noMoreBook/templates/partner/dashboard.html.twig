@@ -1,77 +1,113 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de bord partenaire{% endblock %}
+{% block title %}Tableau de bord partenaire
+{% endblock %}
 
 {% block body %}
-<a href="{{ path('partner_all_discussions') }}" class="btn btn-info mb-3">Voir toutes mes discussions</a>
-    <h1>Mes réservations disponibles</h1>
-    <a href="{{ path('partner_reservation_new') }}" class="btn btn-success">Ajouter une réservation</a>
-    <table class="table mt-3">
-        <thead>
-            <tr>
-                <th>Hôtel</th>
-                <th>Ville</th>
-                <th>Date début</th>
-                <th>Date fin</th>
-                <th>Prix</th>
-                <th>Disponible</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for reservation in disponibles %}
-            <tr>
-                <td>{{ reservation.hotel.name }}</td>
-                <td>{{ reservation.hotel.city }}</td>
-                <td>{{ reservation.startDate|date('d/m/Y') }}</td>
-                <td>{{ reservation.endDate|date('d/m/Y') }}</td>
-                <td>{{ reservation.price }} €</td>
-                <td>{{ reservation.isAvailable ? 'Oui' : 'Non' }}</td>
-                <td>
-                    <a href="{{ path('partner_reservation_edit', {id: reservation.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
-                    <form method="post" action="{{ path('partner_reservation_delete', {id: reservation.id}) }}" style="display:inline;">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette réservation ?');">Supprimer</button>
-                    </form>
-                </td>
-            </tr>
-        {% else %}
-            <tr><td colspan="7">Aucune réservation disponible.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
+	<div class="max-w-7xl mx-auto px-4 py-8">
+		<div class="flex justify-between items-center mb-6">
+			<h1 class="text-3xl font-bold text-indigo-700">Tableau de bord partenaire</h1>
+			<a href="{{ path('partner_all_discussions') }}" class="btn btn-info px-4 py-2 rounded hover:bg-indigo-700 text-white bg-indigo-600 transition">
+				<i class="fas fa-comments mr-2"></i>Voir toutes mes discussions
+			</a>
+		</div>
 
-    <h1 class="mt-5">Réservations prises par des clients</h1>
-    <table class="table mt-3">
-        <thead>
-            <tr>
-                <th>Hôtel</th>
-                <th>Ville</th>
-                <th>Date début</th>
-                <th>Date fin</th>
-                <th>Prix</th>
-                <th>Client</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for reservation in reservees %}
-            <tr>
-                <td>{{ reservation.hotel.name }}</td>
-                <td>{{ reservation.hotel.city }}</td>
-                <td>{{ reservation.startDate|date('d/m/Y') }}</td>
-                <td>{{ reservation.endDate|date('d/m/Y') }}</td>
-                <td>{{ reservation.price }} €</td>
-                <td>{{ reservation.client.email }}</td>
-                <td>
-                <a href="{{ path('partner_contact_client', {clientId: reservation.client.id}) }}" class="btn btn-primary btn-sm">Contacter</a>
-                <a href="{{ path('partner_view_client', {clientId: reservation.client.id}) }}" class="btn btn-info btn-sm">Voir infos</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr><td colspan="6">Aucune réservation prise par un client.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
+		<section class="mb-12">
+			<div class="flex justify-between items-center mb-4">
+				<h2 class="text-2xl font-semibold text-gray-800">Mes réservations disponibles ({{ disponibles|length }})</h2>
+				<a href="{{ path('partner_reservation_new') }}" class="btn btn-success px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white transition flex items-center">
+					<i class="fas fa-plus mr-2"></i>Ajouter une réservation
+				</a>
+			</div>
 
+			<div class="overflow-x-auto rounded-lg shadow">
+				<table class="min-w-full bg-white divide-y divide-gray-200">
+					<thead class="bg-gray-50">
+						<tr>
+							{% set headers = ['Hôtel', 'Ville', 'Date début', 'Date fin', 'Prix', 'Disponible', 'Actions'] %}
+							{% for header in headers %}
+								<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ header }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-gray-200">
+						{% for reservation in disponibles %}
+							<tr class="hover:bg-gray-100">
+								<td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ reservation.hotel.name }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ reservation.hotel.city }}</td>
+								<td class="px-6 py-4 whitespace-nowrap">{{ reservation.startDate|date('d/m/Y') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap">{{ reservation.endDate|date('d/m/Y') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap font-semibold text-indigo-600">{{ reservation.price }}
+									€</td>
+								<td class="px-6 py-4 whitespace-nowrap">
+									{% if reservation.isAvailable %}
+										<span class="inline-block px-2 py-1 text-xs font-semibold text-green-800 bg-green-200 rounded-full">Oui</span>
+									{% else %}
+										<span class="inline-block px-2 py-1 text-xs font-semibold text-red-800 bg-red-200 rounded-full">Non</span>
+									{% endif %}
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap space-x-2">
+									<a href="{{ path('partner_reservation_edit', {id: reservation.id}) }}" class="btn btn-primary px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white transition text-sm inline-flex items-center">
+										<i class="fas fa-edit mr-1"></i>Modifier
+									</a>
+									<form method="post" action="{{ path('partner_reservation_delete', {id: reservation.id}) }}" class="inline-block" onsubmit="return confirm('Supprimer cette réservation ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+										<button type="submit" class="btn btn-danger px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white transition text-sm inline-flex items-center">
+											<i class="fas fa-trash-alt mr-1"></i>Supprimer
+										</button>
+									</form>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="7" class="text-center py-6 text-gray-500">Aucune réservation disponible.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section>
+			<h2 class="text-2xl font-semibold text-gray-800 mb-4">Réservations prises par des clients ({{ reservees|length }})</h2>
+
+			<div class="overflow-x-auto rounded-lg shadow">
+				<table class="min-w-full bg-white divide-y divide-gray-200">
+					<thead class="bg-gray-50">
+						<tr>
+							{% set headersReserved = ['Hôtel', 'Ville', 'Date début', 'Date fin', 'Prix', 'Client', 'Actions'] %}
+							{% for header in headersReserved %}
+								<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ header }}</th>
+							{% endfor %}
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-gray-200">
+						{% for reservation in reservees %}
+							<tr class="hover:bg-gray-100">
+								<td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ reservation.hotel.name }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-gray-700">{{ reservation.hotel.city }}</td>
+								<td class="px-6 py-4 whitespace-nowrap">{{ reservation.startDate|date('d/m/Y') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap">{{ reservation.endDate|date('d/m/Y') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap font-semibold text-indigo-600">{{ reservation.price }}
+									€</td>
+								<td class="px-6 py-4 whitespace-nowrap text-gray-800">{{ reservation.client.email }}</td>
+								<td class="px-6 py-4 whitespace-nowrap space-x-2">
+									<a href="{{ path('partner_contact_client', {clientId: reservation.client.id}) }}" class="btn btn-primary px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white transition text-sm inline-flex items-center">
+										<i class="fas fa-envelope mr-1"></i>Contacter
+									</a>
+									<a href="{{ path('partner_view_client', {clientId: reservation.client.id}) }}" class="btn btn-info px-3 py-1 rounded bg-indigo-500 hover:bg-indigo-600 text-white transition text-sm inline-flex items-center">
+										<i class="fas fa-info-circle mr-1"></i>Voir infos
+									</a>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="7" class="text-center py-6 text-gray-500">Aucune réservation prise par un client.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+	</div>
 {% endblock %}

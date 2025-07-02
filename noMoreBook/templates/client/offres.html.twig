@@ -1,11 +1,53 @@
-<h1>Hôtels avec offres disponibles</h1>
-<ul>
-    {% for hotel in hotels %}
-        <li>
-            <strong>{{ hotel.name }}</strong> à {{ hotel.city }}
-            <a href="{{ path('client_hotel_reservations', {id: hotel.id}) }}">Voir les réservations disponibles</a>
-        </li>
-    {% else %}
-        <li>Aucun hôtel avec des offres disponibles.</li>
-    {% endfor %}
-</ul>
+{% extends 'base.html.twig' %}
+
+{% block title %}Offres d'hôtels disponibles
+{% endblock %}
+
+{% block body %}
+	<div class="max-w-7xl mx-auto px-4 py-10">
+		<h1 class="text-3xl font-bold text-center text-indigo-700 mb-8">Hôtels avec offres disponibles</h1>
+
+		<!-- Formulaire de filtre -->
+		<div class="bg-white shadow p-6 rounded-lg mb-8">
+			{{ form_start(form, {'attr': {'class': 'grid grid-cols-1 md:grid-cols-3 gap-4'}}) }}
+			<div>
+				{{ form_label(form.city, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+				{{ form_widget(form.city, {'attr': {'class': 'mt-1 block w-full rounded-md border border-gray-300 shadow-sm'}}) }}
+			</div>
+			<div>
+				{{ form_label(form.date, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+				{{ form_widget(form.date, {'attr': {'class': 'mt-1 block w-full rounded-md border border-gray-300 shadow-sm px-2'}}) }}
+			</div>
+			<div class="flex items-end">
+				<button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">
+					Filtrer
+				</button>
+			</div>
+			{{ form_end(form) }}
+		</div>
+
+		<!-- Liste des hôtels -->
+		{% if hotels is not empty %}
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+				{% for hotel in hotels %}
+					<div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+						<h2 class="text-xl font-semibold mb-1">{{ hotel.name }}</h2>
+						<p class="text-gray-500 mb-2">📍
+							{{ hotel.city }}</p>
+						<a href="{{ path('client_hotel_reservations', {id: hotel.id}) }}" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm">
+							Voir les réservations disponibles
+						</a>
+					</div>
+				{% endfor %}
+			</div>
+		{% else %}
+			<div class="text-center text-gray-500 text-lg py-10">
+				{% if hasSearched %}
+					Aucun hôtel ne correspond à votre recherche.
+				{% else %}
+					Pas d'offres disponibles pour le moment.
+				{% endif %}
+			</div>
+		{% endif %}
+	</div>
+{% endblock %}

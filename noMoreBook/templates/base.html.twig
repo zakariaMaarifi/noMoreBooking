@@ -1,32 +1,59 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🏨</text></svg>">
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-    {% if app.user %}
-        <p>hello world</p>
-        {# {{ dump(app.user) }} #}
+		{% block stylesheets %}
+			<link rel="stylesheet" href="{{ asset('build/app.css') }}">
+		{% endblock %}
 
-        {# Un seul formulaire de déconnexion, bien configuré #}
-        {# {% if app.user %}
-            <form action="{{ path('app_logout') }}" method="post" style="display:inline;">
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                <button type="submit">Déconnexion</button>
-            </form>
-        {% endif %} #}
-         <a href="{{ path('app_logout') }}">Logout</a>{% endif %}
-         {% if not app.user and app.request.attributes.get('_route') != 'app_login' %}
-            <a href="{{ path('app_login') }}">se connecter</a>
-        {% endif %}
+		{% block javascripts %}
+			{{ encore_entry_script_tags('app') }}
+		{% endblock %}
+	</head>
+	<body
+		class="bg-gray-50">
 
-        {% block body %}{% endblock %}
-    </body>
-</html>
+		<!-- Navbar -->
+		<nav class="bg-white border-b border-gray-200 shadow-sm">
+			<div
+				class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+				<!-- Logo + Site Name -->
+				<div class="flex items-center space-x-2">
+					<span class="text-2xl">🏨</span>
+					<a href="{{ path('app_home_page') }}" class="text-xl font-bold text-indigo-600">LastChanceRooms</a>
+				</div>
+
+				<!-- Links -->
+				<div class="flex items-center space-x-6">
+					<a href="{{ path('client_offers') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Offres</a>
+
+					{% if app.user %}
+						<a href="{{ path('client_reservations') }}" class="text-sm font-medium text-gray-700 hover:text-indigo-600">Mes réservations</a>
+						<span class="text-sm text-gray-500">Bonjour,
+							{{ app.user.email }}</span>
+
+						<form action="{{ path('app_logout') }}" method="post">
+							<input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+							<button type="submit" class="text-sm text-red-600 hover:text-red-800 font-medium">Déconnexion</button>
+						</form>
+					{% else %}
+						{% if app.request.attributes.get('_route') != 'app_login' %}
+							<a href="{{ path('app_login') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Se connecter</a>
+						{% endif %}
+					{% endif %}
+				</div>
+			</div>
+		</nav>
+
+		<!-- Main content -->
+		<main class="py-8"> {% block body %}{% endblock %}
+			</main>
+
+		</body>
+	</html>

@@ -52,24 +52,59 @@ class AppFixtures extends Fixture
         $manager->persist($category);
 
         // Création d'un hôtel
-        $hotel = new Hotel();
-        $hotel->setName('Hotel Royal');
-        $hotel->setCity('Paris');
-        $hotel->setPartner($partner);
-        $hotel->setStatus('available');
-        $manager->persist($hotel);
+
+        $hotelsData = [
+            ['Hotel Royal', 'Paris'],
+            ['Sunset Resort', 'Nice'],
+            ['Mont Blanc Palace', 'Chamonix'],
+            ['Ocean View Inn', 'Biarritz'],
+            ['Château Lumière', 'Strasbourg'],
+            ['Azur Paradise', 'Cannes'],
+            ['Alpine Retreat', 'Grenoble'],
+            ['City Zen Hotel', 'Lyon'],
+            ['Riviera Escape', 'Marseille'],
+            ['Golden Leaf', 'Toulouse'],
+            ['La Belle Vie', 'Bordeaux'],
+            ['Nordik Lodge', 'Lille'],
+            ['Domaine du Lac', 'Annecy'],
+            ['Le Central', 'Nantes'],
+            ['Zenith Hôtel', 'Rennes'],
+        ];
+
+        foreach ($hotelsData as $index => [$name, $city]) {
+            $hotel = new Hotel();
+            $hotel->setName($name);
+            $hotel->setCity($city);
+            $hotel->setPartner($partner);
+            $hotel->setStatus('available');
+            $manager->persist($hotel);
+
+            $startDate = new \DateTime("+" . (3 + $index * 2) . " days");
+            $endDate = (clone $startDate)->modify('+2 days');
+
+            $reservation = new Reservation();
+            $reservation->setStartDate($startDate);
+            $reservation->setEndDate($endDate);
+            $reservation->setPrice(100 + rand(20, 100));
+            $reservation->setIsAvailable(true);
+            $reservation->setHotel($hotel);
+            $reservation->addCategory($category);
+            // $reservation->setClient($client);
+            $reservation->setPartner($partner);
+            $manager->persist($reservation);
+        }
 
         // Création d'une réservation
-        $reservation = new Reservation();
-        $reservation->setStartDate(new \DateTime('+5 days'));
-        $reservation->setEndDate(new \DateTime('+7 days'));
-        $reservation->setPrice(150.00);
-        $reservation->setIsAvailable(true);
-        $reservation->setHotel($hotel);
-        $reservation->addCategory($category);
-        $reservation->setClient($client);
-        $reservation->setPartner($partner);
-        $manager->persist($reservation);
+        // $reservation = new Reservation();
+        // $reservation->setStartDate(new \DateTime('+5 days'));
+        // $reservation->setEndDate(new \DateTime('+7 days'));
+        // $reservation->setPrice(150.00);
+        // $reservation->setIsAvailable(true);
+        // $reservation->setHotel($hotel);
+        // $reservation->addCategory($category);
+        // $reservation->setClient($client);
+        // $reservation->setPartner($partner);
+        // $manager->persist($reservation);
 
         // Création d'un achat
         $purchase = new Purchase();

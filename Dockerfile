@@ -23,8 +23,7 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 RUN chown -R www-data:www-data /var/www/html/var /var/www/html/vendor /var/www/html/public || true
 
 # Installe les dépendances PHP
-RUN composer install --no-dev --optimize-autoloader
-
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Cache warmup (optionnel, utile en prod)
 RUN php bin/console cache:clear --env=prod || true
 

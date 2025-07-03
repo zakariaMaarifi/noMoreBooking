@@ -155,7 +155,7 @@ class ResetPasswordController extends AbstractController
         }
 
         $email = (new TemplatedEmail())
-            ->from(new Address('mailer@your-domain.com', 'reset pass bot'))
+            ->from(new Address('test@example.com', 'reset pass bot'))
             ->to((string) $user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('reset_password/email.html.twig')
@@ -163,7 +163,7 @@ class ResetPasswordController extends AbstractController
                 'resetToken' => $resetToken,
             ])
         ;
-
+        dump();
         $mailer->send($email);
 
         // Store the token object in session for retrieval in check-email route.

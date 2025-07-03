@@ -11,6 +11,10 @@ RUN a2enmod rewrite
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Install Symfony CLI (for symfony-cmd)
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+    mv /root/.symfony*/bin/symfony /usr/local/bin/symfony
+
 # Set working directory to Apache root
 WORKDIR /var/www/html
 
@@ -20,13 +24,15 @@ COPY noMoreBook/ ./
 # Fix Apache DocumentRoot to /public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Install PHP dependencies (scripts enabled)
+RUN composer install --no-dev --optimize-autoloader
+
 # Install Node dependencies and build assets (ignore error if no package.json)
 RUN if [ -f package.json ]; then npm install && npm run build; fi
 
 # Set permissions for cache/logs/public
 RUN mkdir -p var && chown -R www-data:www-data var public
+
 # Clear and warmup cache (ignore error if .env not ready)
 RUN php bin/console cache:clear --env=prod || true
 

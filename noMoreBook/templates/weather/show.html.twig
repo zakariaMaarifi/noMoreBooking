@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Météo à {{ ville }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 50px; }
+        .weather-card {
+            display: inline-block;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px 50px;
+        }
+        .city { font-size: 2em; font-weight: bold; color: #2c3e50; }
+        .temp { font-size: 3em; color: #3498db; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="weather-card">
+        <div class="city">{{ ville }}</div>
+        <div class="temp">{{ temperature }}°C</div>
+    </div>
+</body>
+</html>

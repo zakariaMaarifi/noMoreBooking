@@ -3,9 +3,17 @@ services:
     name: no-more-booking
     plan: free
     env: docker
+    dockerfilePath: ./Dockerfile
+    region: frankfurt
+    branch: main
+    buildCommand: ""
+    startCommand: ""
+    healthCheckPath: /
     envVars:
       - key: APP_ENV
         value: prod
+      - key: APP_DEBUG
+        value: "0"
       - key: APP_SECRET
         generateValue: true
       - key: DATABASE_URL
@@ -19,4 +27,4 @@ databases:
   - name: no-more-booking-db
     plan: free
     databaseName: no_more_book
-    user: root
+    user: nomorebook_user

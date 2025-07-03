@@ -1,7 +1,6 @@
 services:
   - type: web
     name: no-more-booking
-    runtime: php
     plan: free
     buildCommand: |
       cd noMoreBook

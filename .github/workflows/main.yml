@@ -38,6 +38,14 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
         working-directory: ./noMoreBook
+        
+      - name: Install Node.js dependencies
+        run: npm install
+        working-directory: ./noMoreBook
+
+      - name: Build assets
+        run: npm run build
+        working-directory: ./noMoreBook
 
       - name: Wait for MySQL
         run: |

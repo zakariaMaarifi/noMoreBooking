@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nomorebook_app
+    ports:
+      - "8080:80"
+    environment:
+      - APP_ENV=prod
+      - APP_DEBUG=0
+      - DATABASE_URL=mysql://nomorebook_user:nomorebook_password@db:3306/nomorebook_db?serverVersion=5.7&charset=utf8mb4
+      - APP_SECRET=your-secret-key-here-change-in-production
+      - MAILER_DSN=smtp://bc484694b30f0a:bdc8204781ab57@sandbox.smtp.mailtrap.io:2525
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - app_var:/var/www/html/var
+    networks:
+      - nomorebook_network
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    container_name: nomorebook_db
+    environment:
+      MYSQL_DATABASE: nomorebook_db
+      MYSQL_USER: nomorebook_user
+      MYSQL_PASSWORD: nomorebook_password
+      MYSQL_ROOT_PASSWORD: nomorebook_root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - nomorebook_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 40s
+
+  # Service optionnel pour PhpMyAdmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: nomorebook_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_USER: nomorebook_user
+      PMA_PASSWORD: nomorebook_password
+      MYSQL_ROOT_PASSWORD: nomorebook_root_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    networks:
+      - nomorebook_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+  app_var:
+    driver: local
+
+networks:
+  nomorebook_network:
+    driver: bridge

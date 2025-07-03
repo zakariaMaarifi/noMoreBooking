@@ -1,0 +1,59 @@
+FROM php:8.2-apache
+
+# Install system dependencies and PHP extensions
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip \
+    libicu-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && docker-php-ext-install intl pdo pdo_mysql zip opcache \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure PHP for development
+RUN echo "memory_limit = 256M" >> /usr/local/etc/php/conf.d/memory-limit.ini \
+    && echo "upload_max_filesize = 64M" >> /usr/local/etc/php/conf.d/upload-limits.ini \
+    && echo "post_max_size = 64M" >> /usr/local/etc/php/conf.d/upload-limits.ini \
+    && echo "display_errors = On" >> /usr/local/etc/php/conf.d/development.ini \
+    && echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/development.ini
+
+# Enable Apache mod_rewrite and configure
+RUN a2enmod rewrite \
+    && a2enmod headers
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Configure Apache DocumentRoot
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    DirectoryIndex index.php\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# Create required directories and set permissions
+RUN mkdir -p var/cache var/log var/sessions \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Set environment variables for development
+ENV APP_ENV=dev
+ENV APP_DEBUG=1
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]

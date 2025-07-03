@@ -1,0 +1,39 @@
+# Node modules
+noMoreBook/node_modules
+noMoreBook/npm-debug.log*
+
+# Vendor directory (will be reinstalled)
+noMoreBook/vendor
+
+# Cache and logs
+noMoreBook/var/cache/*
+noMoreBook/var/log/*
+noMoreBook/var/sessions/*
+
+# Environment files (will be overridden in containers)
+noMoreBook/.env.local
+noMoreBook/.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# IDE files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+noMoreBook/tests
+noMoreBook/phpunit.dist.xml
+noMoreBook/test.yaml
+
+# Build artifacts
+noMoreBook/public/build/*

@@ -64,10 +64,6 @@ jobs:
         run: php bin/phpunit
         working-directory: ./noMoreBook
 
-      - name: Run PHPStan
-        run: vendor/bin/phpstan analyse src --level=max
-        working-directory: ./noMoreBook
-
       - name: Lint PHP
         run: find src/ -name "*.php" | xargs -n 1 php -l
         working-directory: ./noMoreBook

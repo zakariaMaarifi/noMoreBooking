@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: no-more-booking
+    env: php
+    plan: free
+    buildCommand: |
+      cd noMoreBook
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php bin/console cache:clear --env=prod
+      php bin/console doctrine:migrations:migrate --no-interaction --env=prod
+    startCommand: |
+      cd noMoreBook
+      php -S 0.0.0.0:10000 -t public
+    envVars:
+      - key: APP_ENV
+        value: prod
+      - key: APP_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: no-more-booking-db
+          property: connectionString
+      - key: MAILER_DSN
+        value: smtp://bc484694b30f0a:bdc8204781ab57@sandbox.smtp.mailtrap.io:2525
+
+databases:
+  - name: no-more-booking-db
+    plan: free
+    databaseName: no_more_book
+    user: root

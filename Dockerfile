@@ -24,9 +24,8 @@ COPY noMoreBook/ ./
 
 # Fix Apache DocumentRoot to /public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-
 # Install PHP dependencies (scripts enabled)
-RUN composer install --no-dev --optimize-autoloader
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
 # Install Node dependencies and build assets (ignore error if no package.json)
 RUN if [ -f package.json ]; then npm install && npm run build; fi

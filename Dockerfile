@@ -26,8 +26,7 @@ RUN composer install --no-dev --optimize-autoloader --no-scripts
 RUN if [ -f package.json ]; then npm install && npm run build; fi
 
 # Set permissions for cache/logs/public
-RUN chown -R www-data:www-data var public
-
+RUN mkdir -p var && chown -R www-data:www-data var public
 # Clear and warmup cache (ignore error if .env not ready)
 RUN php bin/console cache:clear --env=prod || true
 

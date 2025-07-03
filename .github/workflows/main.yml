@@ -9,6 +9,8 @@ on:
 jobs:
   symfony:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/no_more_book_test"
 
     services:
       mysql:
@@ -44,8 +46,6 @@ jobs:
           done
 
       - name: Create database & run migrations
-        env:
-          DATABASE_URL: "mysql://root:root@127.0.0.1:3306/no_more_book_test"
         run: |
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:migrations:migrate --env=test --no-interaction

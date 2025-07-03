@@ -35,6 +35,7 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
+        working-directory: ./noMoreBook
 
       - name: Wait for MySQL
         run: |
@@ -49,18 +50,24 @@ jobs:
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
           php bin/console doctrine:fixtures:load --env=test --no-interaction
+        working-directory: ./noMoreBook
 
       - name: Run PHPUnit tests
         run: php bin/phpunit
+        working-directory: ./noMoreBook
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse src --level=max
+        working-directory: ./noMoreBook
 
       - name: Lint PHP
         run: find src/ -name "*.php" | xargs -n 1 php -l
+        working-directory: ./noMoreBook
 
       - name: Lint YAML
         run: php bin/console lint:yaml config
+        working-directory: ./noMoreBook
 
       - name: Lint Twig
         run: php bin/console lint:twig templates
+        working-directory: ./noMoreBook

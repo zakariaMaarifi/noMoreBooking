@@ -3,7 +3,8 @@ services:
     name: no-more-booking
     plan: free
     env: docker
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: Dockerfile.render
+    dockerContext: .
     region: frankfurt
     branch: main
     buildCommand: ""

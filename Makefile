@@ -72,6 +72,10 @@ render-check: ## Vérifier avant déploiement Render
 	@echo "$(GREEN)Vérification avant déploiement Render...$(NC)"
 	./pre-deploy-check.sh
 
+render-diagnostic: ## Diagnostiquer les problèmes Render
+	@echo "$(GREEN)Diagnostic des problèmes Render...$(NC)"
+	./render-diagnostic.sh
+
 render-test: ## Tester l'environnement Render en local
 	@echo "$(GREEN)Test de l'environnement Render...$(NC)"
 	./test-render.sh

@@ -42,10 +42,13 @@ RUN composer install --no-scripts --no-autoloader --no-dev --optimize-autoloader
 COPY noMoreBook/package*.json ./
 
 # Install Node dependencies and build assets
-RUN npm ci --only=production && npm run build
+RUN npm ci --only=production
 
 # Copy the rest of the application
 COPY noMoreBook/ ./
+
+# Build assets after copying everything
+RUN npm run build
 
 # Finalize composer installation
 RUN composer dump-autoload --optimize --no-dev

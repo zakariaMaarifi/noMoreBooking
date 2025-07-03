@@ -40,7 +40,8 @@ git push origin main
    - **Region** : `Frankfurt`
    - **Branch** : `main`
    - **Environment** : `Docker`
-   - **Dockerfile Path** : `./Dockerfile.render`
+   - **Dockerfile Path** : `Dockerfile.render` (sans le `./`)
+   - **Docker Context** : `.` (racine du projet)
    - **Plan** : `Free` (pour commencer)
 
 ### 4. Configurer les variables d'environnement
@@ -142,6 +143,40 @@ Render active automatiquement HTTPS pour tous les domaines.
 ## 🐛 Dépannage
 
 ### Problèmes courants
+
+#### 0. **Dockerfile introuvable**
+
+**Symptômes** : `Service Root Directory "/opt/render/project/src/Dockerfile.render" is missing`
+
+**Cause** : Render ne trouve pas le Dockerfile au bon endroit.
+
+**Solutions** :
+1. **Vérifiez la structure de votre repository** :
+   ```
+   votre-repo/
+   ├── Dockerfile.render    ← Doit être à la racine
+   ├── render.yaml
+   └── noMoreBook/          ← Votre application Symfony
+       ├── src/
+       ├── public/
+       └── composer.json
+   ```
+
+2. **Dans render.yaml, utilisez** :
+   ```yaml
+   dockerfilePath: Dockerfile.render  # Sans "./"
+   dockerContext: .                   # Racine du projet
+   ```
+
+3. **Vérifiez avec le diagnostic** :
+   ```bash
+   ./render-diagnostic.sh
+   ```
+
+4. **Si le problème persiste** :
+   - Assurez-vous que tous les fichiers sont committés sur GitHub
+   - Vérifiez que la branche `main` est à jour
+   - Essayez de recréer le service Web sur Render
 
 #### 1. **Erreur de connexion à la base de données**
 

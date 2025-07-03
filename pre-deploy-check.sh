@@ -30,9 +30,16 @@ ERRORS=0
 echo "📁 Vérification des fichiers..."
 
 if [ -f "Dockerfile.render" ]; then
-    log_info "Dockerfile.render présent"
+    log_info "Dockerfile.render présent à la racine"
+    
+    # Vérifier que le chemin dans render.yaml est correct
+    if grep -q "dockerfilePath: Dockerfile.render" render.yaml 2>/dev/null; then
+        log_info "Chemin Dockerfile correct dans render.yaml"
+    else
+        log_warning "Vérifiez le chemin dockerfilePath dans render.yaml"
+    fi
 else
-    log_error "Dockerfile.render manquant"
+    log_error "Dockerfile.render manquant à la racine"
     ERRORS=$((ERRORS + 1))
 fi
 

@@ -31,3 +31,5 @@ EXPOSE 80
 
 # Lance Apache en mode premier plan
 CMD ["apache2-foreground"]
+RUN ls -l /var/www/html/vendor/
+RUN ls -l /var/www/html/

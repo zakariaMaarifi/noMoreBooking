@@ -21,8 +21,7 @@ COPY noMoreBook/ ./
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
-
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 # Install Node dependencies and build assets (ignore error if no package.json)
 RUN if [ -f package.json ]; then npm install && npm run build; fi
 

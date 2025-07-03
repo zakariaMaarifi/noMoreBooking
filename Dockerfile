@@ -2,7 +2,7 @@ FROM php:8.2-apache
 
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
-    git zip unzip libicu-dev libonig-dev libxml2-dev libzip-dev npm nodejs \
+    git zip unzip wget libicu-dev libonig-dev libxml2-dev libzip-dev npm nodejs \
     && docker-php-ext-install intl pdo pdo_mysql zip opcache
 
 # Enable Apache mod_rewrite

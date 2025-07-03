@@ -3,17 +3,6 @@ services:
     name: no-more-booking
     plan: free
     env: docker
-    
-    buildCommand: |
-      cd noMoreBook
-      composer install --no-dev --optimize-autoloader
-      npm install
-      npm run build
-      php bin/console cache:clear --env=prod
-      php bin/console doctrine:migrations:migrate --no-interaction --env=prod
-    startCommand: |
-      cd noMoreBook
-      php -S 0.0.0.0:10000 -t public
     envVars:
       - key: APP_ENV
         value: prod

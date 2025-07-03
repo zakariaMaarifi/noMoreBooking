@@ -66,3 +66,23 @@ install-dev: ## Installation en mode développement
 
 status: ## Voir le statut des conteneurs
 	docker-compose ps
+
+# Commandes spécifiques à Render
+render-check: ## Vérifier avant déploiement Render
+	@echo "$(GREEN)Vérification avant déploiement Render...$(NC)"
+	./pre-deploy-check.sh
+
+render-test: ## Tester l'environnement Render en local
+	@echo "$(GREEN)Test de l'environnement Render...$(NC)"
+	./test-render.sh
+
+render-build: ## Construire l'image Render
+	@echo "$(GREEN)Construction de l'image Render...$(NC)"
+	docker build -f Dockerfile.render -t nomorebook-render .
+
+render-deploy: render-check ## Préparer le déploiement Render
+	@echo "$(GREEN)Préparation du déploiement Render...$(NC)"
+	git add .
+	git commit -m "Ready for Render deployment" || true
+	git push origin main
+	@echo "$(YELLOW)Maintenant, configurez votre service sur render.com$(NC)"

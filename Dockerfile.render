@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install system dependencies and PHP extensions
+# Install system dependencies and PHP extensions including PostgreSQL
 RUN apt-get update && apt-get install -y \
     git \
     zip \
@@ -9,10 +9,11 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
+    libpq-dev \
     curl \
     && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
-    && docker-php-ext-install intl pdo pdo_mysql zip opcache \
+    && docker-php-ext-install intl pdo pdo_mysql pdo_pgsql zip opcache \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -40,8 +41,8 @@ RUN composer install --no-scripts --no-autoloader --no-dev --optimize-autoloader
 # Copy package.json and package-lock.json for better caching
 COPY noMoreBook/package*.json ./
 
-# Install Node dependencies
-RUN npm ci --only=production
+# Install Node dependencies and build assets
+RUN npm ci --only=production && npm run build
 
 # Copy the rest of the application
 COPY noMoreBook/ ./
@@ -49,24 +50,17 @@ COPY noMoreBook/ ./
 # Finalize composer installation
 RUN composer dump-autoload --optimize --no-dev
 
-# Build assets
-RUN npm run build
-
 # Configure Apache DocumentRoot
-COPY <<EOF /etc/apache2/sites-available/000-default.conf
-<VirtualHost *:80>
-    DocumentRoot /var/www/html/public
-    DirectoryIndex index.php
-
-    <Directory /var/www/html/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-
-    ErrorLog \${APACHE_LOG_DIR}/error.log
-    CustomLog \${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-EOF
+RUN echo '<VirtualHost *:80>\n\
+    DocumentRoot /var/www/html/public\n\
+    DirectoryIndex index.php\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Create required directories and set permissions
 RUN mkdir -p var/cache var/log var/sessions \
@@ -77,10 +71,23 @@ RUN mkdir -p var/cache var/log var/sessions \
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
+# Expose port (Render uses PORT environment variable)
 EXPOSE 80
+
+# Create a startup script for Render
+RUN echo '#!/bin/bash\n\
+set -e\n\
+echo "Starting NoMoreBooking on Render..."\n\
+# Run migrations\n\
+php bin/console doctrine:migrations:migrate --no-interaction || true\n\
+# Clear cache\n\
+php bin/console cache:clear --env=prod\n\
+# Start Apache\n\
+exec apache2-foreground' > /usr/local/bin/start.sh \
+    && chmod +x /usr/local/bin/start.sh
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/ || exit 1
 
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/start.sh"]
